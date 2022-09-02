@@ -24,3 +24,6 @@ test = [
   "pytest < 5.0.0",
   "pytest-cov[all]"
 ]
+
+[tool.maturin]
+python-source = "python"
