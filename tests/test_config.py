@@ -17,6 +17,7 @@ def with_toml_file() -> None:
         units = "metric"
         gravity = 9.81
         water_density = 1025.9
+        extra_value = 10.0
         """
     )
     with Path("test.toml").open("w") as fp:
@@ -47,6 +48,7 @@ def test_config_from_file() -> None:
     assert general.units == "metric"
     assert general.gravity == 9.81
     assert general.water_density == 1025.9
+    assert not hasattr(general, "extra_value")
 
 
 def test_config_from_file_missing_raises_error() -> None:
