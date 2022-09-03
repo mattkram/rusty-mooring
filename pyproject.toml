@@ -21,8 +21,10 @@ dependencies = []
 
 [project.optional-dependencies]
 test = [
-  "pytest < 5.0.0",
-  "pytest-cov[all]"
+    "pytest < 5.0.0",
+    "pytest-cov",
+    "mypy == 0.971",
+    "nox == 2022.8.7",
 ]
 
 [tool.maturin]
