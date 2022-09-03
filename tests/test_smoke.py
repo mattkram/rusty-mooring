@@ -21,20 +21,22 @@ def tmp_cwd(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
 @pytest.fixture()
 def with_toml_file() -> None:
     """Write a TOML file into the current directory."""
-    contents = dedent("""\
+    contents = dedent(
+        """\
         [config]
         ip = "42.69.42.0"
         port = 42
-    """)
+        """
+    )
     with Path("test.toml").open("w") as fp:
         fp.write(contents)
 
 
 def test_config_init() -> None:
     """Initialize the Config like a normal object, read & write attributes."""
-    config = rusty_mooring.Config(ip='1.2.3.4', port=8000)
+    config = rusty_mooring.Config(ip="1.2.3.4", port=8000)
 
-    assert config.ip == '1.2.3.4'
+    assert config.ip == "1.2.3.4"
     assert config.port == 8000
 
     config.ip = "4.3.2.1"
