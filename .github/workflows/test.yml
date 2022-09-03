@@ -17,18 +17,18 @@ jobs:
       OS: ${{ matrix.os }}
       PYTHON: ${{ matrix.python-version }}
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Set up python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install nox
-        run: |
-          pip install --upgrade pip nox
-      - name: Static type check with mypy
-        run: |
-          nox --session mypy
-      - name: Test with pytest
-        run: |
-          nox --session pytest --python ${{ matrix.python-version }}
+    - name: Checkout Repo
+      uses: actions/checkout@v2
+    - name: Set up python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install nox
+      run: |
+        pip install --upgrade pip nox
+    - name: Static type check with mypy
+      run: |
+        nox --session mypy
+    - name: Test with pytest
+      run: |
+        nox --session pytest --python ${{ matrix.python-version }}
