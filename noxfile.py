@@ -8,7 +8,7 @@ def mypy(session: Session) -> None:
     session.run('mypy', '.')
 
 
-@nox.session(python=['3.9', '3.10'])
+@nox.session(python=['3.9'])
 def pytest(session: Session) -> None:
     session.install('pytest', '.')
     session.run('pytest')
