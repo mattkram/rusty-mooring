@@ -1,7 +1,8 @@
-class Config:
-    ip: str
-    port: int
+class GeneralConfig:
+    units: str
+    gravity: float
+    water_density: float
 
     @classmethod
-    def from_file(cls, filename: str) -> Config: ...
-    def __init__(self, ip: str, port: int): ...
+    def from_file(cls, filename: str) -> GeneralConfig: ...
+    def __init__(self, units: str, gravity: float, water_density: float): ...

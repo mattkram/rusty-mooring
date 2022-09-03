@@ -5,32 +5,38 @@ use serde_derive::Deserialize;
 use std::fs;
 use toml;
 
-// Top level struct to hold the TOML data.
+/// Top level struct to hold the config data.
 #[derive(Deserialize)]
 pub struct Data {
-    pub config: Config,
+    pub general: GeneralConfig,
 }
 
-/// Config holds data from the `[config]` section.
+/// Data from the `[general]` section.
 #[pyclass]
 #[derive(Deserialize)]
-pub struct Config {
+pub struct GeneralConfig {
     #[pyo3(get, set)]
-    pub ip: String,
+    pub units: String,
     #[pyo3(get, set)]
-    pub port: u16,
+    pub gravity: f64,
+    #[pyo3(get, set)]
+    pub water_density: f64,
 }
 
 #[pymethods]
-impl Config {
+impl GeneralConfig {
     #[new]
-    fn new(ip: String, port: u16) -> Self {
-        Config { ip: ip, port: port }
+    fn new(units: String, gravity: f64, water_density: f64) -> Self {
+        GeneralConfig {
+            units: units,
+            gravity: gravity,
+            water_density: water_density,
+        }
     }
 
     /// Load the configuration from a TOML file.
     #[staticmethod]
-    pub fn from_file(filename: String) -> PyResult<Config> {
+    pub fn from_file(filename: String) -> PyResult<GeneralConfig> {
         let contents = match fs::read_to_string(&filename) {
             Ok(c) => c,
             Err(_) => {
@@ -50,6 +56,6 @@ impl Config {
             }
         };
 
-        Ok(data.config)
+        Ok(data.general)
     }
 }

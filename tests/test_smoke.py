@@ -23,9 +23,10 @@ def with_toml_file() -> None:
     """Write a TOML file into the current directory."""
     contents = dedent(
         """\
-        [config]
-        ip = "42.69.42.0"
-        port = 42
+        [general]
+        units = "metric"
+        gravity = 9.81
+        water_density = 1025.9
         """
     )
     with Path("test.toml").open("w") as fp:
@@ -34,25 +35,32 @@ def with_toml_file() -> None:
 
 def test_config_init() -> None:
     """Initialize the Config like a normal object, read & write attributes."""
-    config = rusty_mooring.Config(ip="1.2.3.4", port=8000)
+    general = rusty_mooring.GeneralConfig(units="metric", gravity=9.81, water_density=1025.9)
 
-    assert config.ip == "1.2.3.4"
-    assert config.port == 8000
+    assert general.units == "metric"
+    assert general.gravity == 9.81
+    assert general.water_density == 1025.9
 
-    config.ip = "4.3.2.1"
-    assert config.ip == "4.3.2.1"
+    general.units = "english"
+    general.gravity = 32.2
+    general.water_density = 1.94
+
+    assert general.units == "english"
+    assert general.gravity == 32.2
+    assert general.water_density == 1.94
 
 
 @pytest.mark.usefixtures("with_toml_file")
 def test_config_from_file() -> None:
     """Load a Config from a TOML file."""
-    config = rusty_mooring.Config.from_file("test.toml")
-    assert config.ip == "42.69.42.0"
-    assert config.port == 42
+    general = rusty_mooring.GeneralConfig.from_file("test.toml")
+    assert general.units == "metric"
+    assert general.gravity == 9.81
+    assert general.water_density == 1025.9
 
 
 def test_config_from_file_missing_raises_error() -> None:
     """An exception is raised if the file doesn't exist."""
     with pytest.raises(FileNotFoundError) as exc_info:
-        rusty_mooring.Config.from_file("test.toml")
+        rusty_mooring.GeneralConfig.from_file("test.toml")
     assert str(exc_info.value) == "File 'test.toml' not found"
