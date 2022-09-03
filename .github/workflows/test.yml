@@ -12,10 +12,20 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
+        python-version: [3.9]
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - name: Run nox
-        uses: wntrblm/nox@2022.8.7
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
         with:
-          python-versions: "3.9, 3.10"
+          python-version: ${{ matrix.python-version }}
+      - name: Static type check with mypy
+        run: |
+          nox --session mypy
+      - name: Test with pytest
+        run: |
+          nox --session pytest --python ${{ matrix.python-version }}
