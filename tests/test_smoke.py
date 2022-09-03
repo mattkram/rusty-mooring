@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from textwrap import dedent
 from typing import TYPE_CHECKING
@@ -8,10 +10,6 @@ import rusty_mooring
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
-
-
-def test_sum_as_string() -> None:
-    assert rusty_mooring.sum_as_string(3, 4) == "7"
 
 
 @pytest.fixture(autouse=True)
