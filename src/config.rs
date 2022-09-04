@@ -17,11 +17,11 @@ pub struct Config {
 #[pyclass]
 #[derive(Clone, Deserialize)]
 pub struct GeneralConfig {
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub units: String,
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub gravity: f64,
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub water_density: f64,
 }
 

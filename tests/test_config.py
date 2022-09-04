@@ -24,23 +24,6 @@ def with_toml_file() -> None:
         fp.write(contents)
 
 
-def test_general_config_init() -> None:
-    """Initialize the Config like a normal object, read & write attributes."""
-    general = rusty_mooring.GeneralConfig(units="metric", gravity=9.81, water_density=1025.9)
-
-    assert general.units == "metric"
-    assert general.gravity == 9.81
-    assert general.water_density == 1025.9
-
-    general.units = "english"
-    general.gravity = 32.2
-    general.water_density = 1.94
-
-    assert general.units == "english"
-    assert general.gravity == 32.2
-    assert general.water_density == 1.94
-
-
 @pytest.mark.usefixtures("with_toml_file")
 def test_config_from_file() -> None:
     """Load a Config from a TOML file."""
