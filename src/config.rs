@@ -66,6 +66,7 @@ pub struct GeneralConfig {
     pub water_density: f64,
 }
 
+/// A structural representation of the input configuration.
 #[pymethods]
 impl Config {
     /// Load the configuration from a TOML file.
