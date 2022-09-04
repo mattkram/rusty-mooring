@@ -67,18 +67,6 @@ pub struct GeneralConfig {
 }
 
 #[pymethods]
-impl GeneralConfig {
-    #[new]
-    fn new(units: String, gravity: f64, water_density: f64) -> Self {
-        GeneralConfig {
-            units: units,
-            gravity: gravity,
-            water_density: water_density,
-        }
-    }
-}
-
-#[pymethods]
 impl Config {
     /// Load the configuration from a TOML file.
     #[staticmethod]
