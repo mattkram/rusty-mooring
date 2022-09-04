@@ -36,6 +36,14 @@ def config() -> Config:
             {line_type="chain", length=1000, num_elements=200},
             {line_type="polyester", length=1800, num_elements=360},
         ]
+
+        [lines.Line2]
+        top_position    = [ 34, 34, -26.2 ]
+        bottom_position = [ 1700, 10, -1961.74 ]
+        segments = [
+            {line_type="chain", length=1000, num_elements=200},
+            {line_type="polyester", length=1800, num_elements=360},
+        ]
         """
     )
     filename = "test.toml"
@@ -46,7 +54,7 @@ def config() -> Config:
     return config
 
 
-def test_general_config_from_file(config: Config) -> None:
+def test_load_general_config_from_file(config: Config) -> None:
     """Load a Config from a TOML file."""
     general = config.general
     assert general.units == "metric"
@@ -55,7 +63,7 @@ def test_general_config_from_file(config: Config) -> None:
     assert not hasattr(general, "extra_value")
 
 
-def test_line_type_config_from_file(config: Config) -> None:
+def test_load_line_types_from_file(config: Config) -> None:
     """Load line types from TOML file."""
     polyester = config.line_type["polyester"]
     assert polyester.diameter == 0.233
@@ -68,7 +76,10 @@ def test_line_type_config_from_file(config: Config) -> None:
     assert chain.axial_stiffness == 9.83e8
 
 
-def test_load_line_from_file(config: Config) -> None:
+def test_load_lines_from_file(config: Config) -> None:
+    """We can load any number of lines with a rich schema from the file."""
+    assert len(config.lines) == 2
+
     line = config.lines["Line1"]
     assert line.top_position == [34, 34, -26.2]
     assert line.bottom_position == [1700, 10, -1961.74]
