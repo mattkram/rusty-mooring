@@ -18,6 +18,7 @@ pub struct Config {
     pub lines: HashMap<String, Line>,
 }
 
+/// Line type properties.
 #[pyclass]
 #[derive(Deserialize, Clone)]
 pub struct LineType {
@@ -29,6 +30,7 @@ pub struct LineType {
     axial_stiffness: f64,
 }
 
+/// A line segment, used to build up a full line.
 #[pyclass]
 #[derive(Deserialize, Clone)]
 pub struct LineSegment {
@@ -40,6 +42,7 @@ pub struct LineSegment {
     num_elements: i32,
 }
 
+/// A mooring line, consisting of multiple segments.
 #[pyclass]
 #[derive(Deserialize, Clone)]
 pub struct Line {
@@ -51,7 +54,7 @@ pub struct Line {
     segments: Vec<LineSegment>,
 }
 
-/// Data from the `[general]` section.
+/// General configuration.
 #[pyclass]
 #[derive(Clone, Deserialize)]
 pub struct GeneralConfig {
