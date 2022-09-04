@@ -2,6 +2,7 @@ use pyo3::exceptions::PyFileNotFoundError;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use serde_derive::Deserialize;
+use std::collections::HashMap;
 use std::fs;
 use toml;
 
@@ -11,6 +12,19 @@ use toml;
 pub struct Config {
     #[pyo3(get)]
     pub general: GeneralConfig,
+    #[pyo3(get)]
+    pub line_type: HashMap<String, LineType>,
+}
+
+#[pyclass]
+#[derive(Deserialize, Clone)]
+pub struct LineType {
+    #[pyo3(get)]
+    diameter: f64,
+    #[pyo3(get)]
+    mass_per_length: f64,
+    #[pyo3(get)]
+    axial_stiffness: f64,
 }
 
 /// Data from the `[general]` section.
