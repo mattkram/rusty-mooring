@@ -28,6 +28,14 @@ def config() -> Config:
         diameter        = 0.127
         mass_per_length = 293.98
         axial_stiffness = 9.83e8
+
+        [lines.Line1]
+        top_position    = [ 34, 34, -26.2 ]
+        bottom_position = [ 1700, 10, -1961.74 ]
+        segments = [
+            {line_type="chain", length=1000, num_elements=200},
+            {line_type="polyester", length=1800, num_elements=360},
+        ]
         """
     )
     filename = "test.toml"
@@ -58,6 +66,20 @@ def test_line_type_config_from_file(config: Config) -> None:
     assert chain.diameter == 0.127
     assert chain.mass_per_length == 293.98
     assert chain.axial_stiffness == 9.83e8
+
+
+def test_load_line_from_file(config: Config) -> None:
+    line = config.lines["Line1"]
+    assert line.top_position == [34, 34, -26.2]
+    assert line.bottom_position == [1700, 10, -1961.74]
+
+    assert line.segments[0].line_type == "chain"
+    assert line.segments[0].length == 1000.0
+    assert line.segments[0].num_elements == 200
+
+    assert line.segments[1].line_type == "polyester"
+    assert line.segments[1].length == 1800.0
+    assert line.segments[1].num_elements == 360
 
 
 def test_config_from_file_missing_raises_error() -> None:

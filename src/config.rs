@@ -14,6 +14,8 @@ pub struct Config {
     pub general: GeneralConfig,
     #[pyo3(get)]
     pub line_type: HashMap<String, LineType>,
+    #[pyo3(get)]
+    pub lines: HashMap<String, Line>,
 }
 
 #[pyclass]
@@ -25,6 +27,28 @@ pub struct LineType {
     mass_per_length: f64,
     #[pyo3(get)]
     axial_stiffness: f64,
+}
+
+#[pyclass]
+#[derive(Deserialize, Clone)]
+pub struct LineSegment {
+    #[pyo3(get)]
+    line_type: String,
+    #[pyo3(get)]
+    length: f64,
+    #[pyo3(get)]
+    num_elements: i32,
+}
+
+#[pyclass]
+#[derive(Deserialize, Clone)]
+pub struct Line {
+    #[pyo3(get)]
+    top_position: [f64; 3],
+    #[pyo3(get)]
+    bottom_position: [f64; 3],
+    #[pyo3(get)]
+    segments: Vec<LineSegment>,
 }
 
 /// Data from the `[general]` section.
