@@ -1,6 +1,6 @@
 class Config:
     general: GeneralConfig
-    line_type: dict[str, LineType]
+    line_types: dict[str, LineType]
     lines: dict[str, Line]
 
     @classmethod

@@ -19,12 +19,12 @@ def config() -> Config:
         water_density = 1025.9
         extra_value = 10.0
 
-        [line_type.polyester]
+        [line_types.polyester]
         diameter        = 0.233
         mass_per_length = 53.7
         axial_stiffness = 3.9e8
 
-        [line_type.chain]
+        [line_types.chain]
         diameter        = 0.127
         mass_per_length = 293.98
         axial_stiffness = 9.83e8
@@ -65,12 +65,12 @@ def test_load_general_config_from_file(config: Config) -> None:
 
 def test_load_line_types_from_file(config: Config) -> None:
     """Load line types from TOML file."""
-    polyester = config.line_type["polyester"]
+    polyester = config.line_types["polyester"]
     assert polyester.diameter == 0.233
     assert polyester.mass_per_length == 53.7
     assert polyester.axial_stiffness == 3.9e8
 
-    chain = config.line_type["chain"]
+    chain = config.line_types["chain"]
     assert chain.diameter == 0.127
     assert chain.mass_per_length == 293.98
     assert chain.axial_stiffness == 9.83e8

@@ -13,7 +13,7 @@ pub struct Config {
     #[pyo3(get)]
     pub general: GeneralConfig,
     #[pyo3(get)]
-    pub line_type: HashMap<String, LineType>,
+    pub line_types: HashMap<String, LineType>,
     #[pyo3(get)]
     pub lines: HashMap<String, Line>,
 }
