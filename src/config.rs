@@ -6,14 +6,16 @@ use std::fs;
 use toml;
 
 /// Top level struct to hold the config data.
+#[pyclass]
 #[derive(Deserialize)]
-pub struct Data {
+pub struct Config {
+    #[pyo3(get)]
     pub general: GeneralConfig,
 }
 
 /// Data from the `[general]` section.
 #[pyclass]
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize)]
 pub struct GeneralConfig {
     #[pyo3(get, set)]
     pub units: String,
@@ -33,10 +35,13 @@ impl GeneralConfig {
             water_density: water_density,
         }
     }
+}
 
+#[pymethods]
+impl Config {
     /// Load the configuration from a TOML file.
     #[staticmethod]
-    pub fn from_file(filename: String) -> PyResult<GeneralConfig> {
+    pub fn from_file(filename: String) -> PyResult<Config> {
         let contents = match fs::read_to_string(&filename) {
             Ok(c) => c,
             Err(_) => {
@@ -46,7 +51,7 @@ impl GeneralConfig {
             }
         };
 
-        let data: Data = match toml::from_str(&contents) {
+        let data: Config = match toml::from_str(&contents) {
             Ok(d) => d,
             Err(_) => {
                 return Err(PyValueError::new_err(format!(
@@ -56,6 +61,6 @@ impl GeneralConfig {
             }
         };
 
-        Ok(data.general)
+        Ok(data)
     }
 }

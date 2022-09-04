@@ -24,7 +24,7 @@ def with_toml_file() -> None:
         fp.write(contents)
 
 
-def test_config_init() -> None:
+def test_general_config_init() -> None:
     """Initialize the Config like a normal object, read & write attributes."""
     general = rusty_mooring.GeneralConfig(units="metric", gravity=9.81, water_density=1025.9)
 
@@ -44,7 +44,8 @@ def test_config_init() -> None:
 @pytest.mark.usefixtures("with_toml_file")
 def test_config_from_file() -> None:
     """Load a Config from a TOML file."""
-    general = rusty_mooring.GeneralConfig.from_file("test.toml")
+    config = rusty_mooring.Config.from_file("test.toml")
+    general = config.general
     assert general.units == "metric"
     assert general.gravity == 9.81
     assert general.water_density == 1025.9
@@ -54,5 +55,5 @@ def test_config_from_file() -> None:
 def test_config_from_file_missing_raises_error() -> None:
     """An exception is raised if the file doesn't exist."""
     with pytest.raises(FileNotFoundError) as exc_info:
-        rusty_mooring.GeneralConfig.from_file("test.toml")
+        rusty_mooring.Config.from_file("test.toml")
     assert str(exc_info.value) == "File 'test.toml' not found"
