@@ -16,7 +16,13 @@ impl MooringSystem {
             Ok(c) => c,
             Err(e) => return Err(e),
         };
-        let system = MooringSystem { config: config };
+        let system = MooringSystem::new(config);
         Ok(system)
+    }
+
+    /// Construct a new MooringSystem from a Config.
+    #[new]
+    fn new(config: Config) -> Self {
+        MooringSystem { config: config }
     }
 }
