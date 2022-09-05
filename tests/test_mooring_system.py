@@ -31,3 +31,10 @@ def mooring_system(request: SubRequest, config_file: Path, config: Config) -> Mo
 def test_load_mooring_system_from_file(mooring_system: MooringSystem) -> None:
     """We can load the whole system config from a file or Config object via the MooringSystem class."""
     assert mooring_system.config.line_types["chain"].diameter == 0.127
+
+
+def test_solve_static(mooring_system: MooringSystem) -> None:
+    """Solve statics and check coordinate output."""
+    # TODO: Replace with expected output
+    mooring_system.solve_static()
+    assert mooring_system.get_line_coordinates() == {}

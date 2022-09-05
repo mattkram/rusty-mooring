@@ -1,5 +1,6 @@
 use crate::config::Config;
 use pyo3::prelude::*;
+use std::collections::HashMap;
 
 #[pyclass]
 pub struct MooringSystem {
@@ -24,5 +25,14 @@ impl MooringSystem {
     #[new]
     fn new(config: Config) -> Self {
         MooringSystem { config: config }
+    }
+
+    /// Solve the static equilibrium of the system.
+    fn solve_static(&self) {}
+
+    /// Return a vector of all coordinates along each line.
+    /// The return type is a mapping of line name to a vector of 3d coordinates.
+    fn get_line_coordinates(&self) -> HashMap<String, Vec<[f64; 3]>> {
+        HashMap::new()
     }
 }
