@@ -31,3 +31,9 @@ class Line:
     top_position: list[float]
     bottom_position: list[float]
     segments: list[LineSegment]
+
+class MooringSystem:
+    config: Config
+
+    @classmethod
+    def from_file(cls, filename: str) -> MooringSystem: ...

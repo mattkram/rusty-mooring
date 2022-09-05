@@ -7,7 +7,7 @@ use toml;
 
 /// Top level struct to hold the config data.
 #[pyclass]
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize)]
 pub struct Config {
     #[pyo3(get)]
     general: GeneralConfig,
