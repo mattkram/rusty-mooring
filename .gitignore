@@ -13,4 +13,6 @@ Cargo.lock
 **/*.rs.bk
 
 # Python output
+.mypy_cache/
+.nox/
 .pytest_cache/
