@@ -20,7 +20,7 @@ pub struct Config {
 
 /// Line type properties.
 #[pyclass]
-#[derive(Deserialize, Clone)]
+#[derive(Clone, Deserialize)]
 pub struct LineType {
     #[pyo3(get)]
     diameter: f64,
@@ -32,7 +32,7 @@ pub struct LineType {
 
 /// A line segment, used to build up a full line.
 #[pyclass]
-#[derive(Deserialize, Clone)]
+#[derive(Clone, Deserialize)]
 pub struct LineSegment {
     #[pyo3(get)]
     line_type: String,
@@ -44,7 +44,7 @@ pub struct LineSegment {
 
 /// A mooring line, consisting of multiple segments.
 #[pyclass]
-#[derive(Deserialize, Clone)]
+#[derive(Clone, Deserialize)]
 pub struct Line {
     #[pyo3(get)]
     top_position: [f64; 3],
@@ -56,7 +56,7 @@ pub struct Line {
 
 // TODO: Is there any way to define as Metric in Rust, but make uppercase in Python?
 #[pyclass]
-#[derive(Deserialize, Clone)]
+#[derive(Clone, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Units {
     METRIC,
