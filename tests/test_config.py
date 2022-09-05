@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from textwrap import dedent
 
 import pytest
 
@@ -10,48 +9,9 @@ from rusty_mooring import Units
 
 
 @pytest.fixture()
-def config() -> Config:
-    """Write a TOML file into the current directory."""
-    contents = dedent(
-        """\
-        [general]
-        units = "metric"
-        gravity = 9.81
-        water_density = 1025.9
-        extra_value = 10.0
-
-        [line_types.polyester]
-        diameter        = 0.233
-        mass_per_length = 53.7
-        axial_stiffness = 3.9e8
-
-        [line_types.chain]
-        diameter        = 0.127
-        mass_per_length = 293.98
-        axial_stiffness = 9.83e8
-
-        [lines.Line1]
-        top_position    = [ 34, 34, -26.2 ]
-        bottom_position = [ 1700, 10, -1961.74 ]
-        segments = [
-            {line_type="chain", length=1000, num_elements=200},
-            {line_type="polyester", length=1800, num_elements=360},
-        ]
-
-        [lines.Line2]
-        top_position    = [ 34, 34, -26.2 ]
-        bottom_position = [ 1700, 10, -1961.74 ]
-        segments = [
-            {line_type="chain", length=1000, num_elements=200},
-            {line_type="polyester", length=1800, num_elements=360},
-        ]
-        """
-    )
-    filename = "test.toml"
-    with Path(filename).open("w") as fp:
-        fp.write(contents)
-
-    config = Config.from_file(filename)
+def config(config_file: Path) -> Config:
+    """The configuration, after being loaded from the TOML file."""
+    config = Config.from_file(config_file.as_posix())
     return config
 
 
