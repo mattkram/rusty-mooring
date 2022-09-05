@@ -6,6 +6,7 @@ from textwrap import dedent
 import pytest
 
 from rusty_mooring import Config
+from rusty_mooring import Units
 
 
 @pytest.fixture()
@@ -57,7 +58,7 @@ def config() -> Config:
 def test_load_general_config_from_file(config: Config) -> None:
     """Load a Config from a TOML file."""
     general = config.general
-    assert general.units == "metric"
+    assert general.units == Units.METRIC
     assert general.gravity == 9.81
     assert general.water_density == 1025.9
     assert not hasattr(general, "extra_value")

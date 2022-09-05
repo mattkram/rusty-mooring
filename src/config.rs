@@ -54,12 +54,21 @@ pub struct Line {
     segments: Vec<LineSegment>,
 }
 
+// TODO: Is there any way to define as Metric in Rust, but make uppercase in Python?
+#[pyclass]
+#[derive(Deserialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum Units {
+    METRIC,
+    ENGLISH,
+}
+
 /// General configuration.
 #[pyclass]
 #[derive(Clone, Deserialize)]
 pub struct GeneralConfig {
     #[pyo3(get)]
-    pub units: String,
+    pub units: Units,
     #[pyo3(get)]
     pub gravity: f64,
     #[pyo3(get)]
@@ -83,10 +92,9 @@ impl Config {
 
         let data: Config = match toml::from_str(&contents) {
             Ok(d) => d,
-            Err(_) => {
+            Err(e) => {
                 return Err(PyValueError::new_err(format!(
-                    "Unable to load data from `{}`",
-                    filename
+                    "Unable to load data from `{filename}`. {e}.",
                 )));
             }
         };

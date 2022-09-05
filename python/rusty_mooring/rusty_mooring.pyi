@@ -1,3 +1,9 @@
+from enum import Enum
+
+class Units(Enum):
+    METRIC = ...
+    ENGLISH = ...
+
 class Config:
     general: GeneralConfig
     line_types: dict[str, LineType]
