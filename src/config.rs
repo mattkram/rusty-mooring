@@ -10,11 +10,11 @@ use toml;
 #[derive(Deserialize)]
 pub struct Config {
     #[pyo3(get)]
-    pub general: GeneralConfig,
+    general: GeneralConfig,
     #[pyo3(get)]
-    pub line_types: HashMap<String, LineType>,
+    line_types: HashMap<String, LineType>,
     #[pyo3(get)]
-    pub lines: HashMap<String, Line>,
+    lines: HashMap<String, Line>,
 }
 
 // TODO: Is there any way to define as Metric in Rust, but make uppercase in Python?
@@ -31,11 +31,11 @@ pub enum Units {
 #[derive(Clone, Deserialize)]
 pub struct GeneralConfig {
     #[pyo3(get)]
-    pub units: Units,
+    units: Units,
     #[pyo3(get)]
-    pub gravity: f64,
+    gravity: f64,
     #[pyo3(get)]
-    pub water_density: f64,
+    water_density: f64,
 }
 
 /// Line type properties.
