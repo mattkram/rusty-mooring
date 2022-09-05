@@ -1,5 +1,4 @@
-use pyo3::exceptions::PyFileNotFoundError;
-use pyo3::exceptions::PyValueError;
+use pyo3::exceptions::{PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
 use serde_derive::Deserialize;
 use std::collections::HashMap;

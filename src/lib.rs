@@ -1,5 +1,4 @@
-use config::Config;
-use config::Units;
+use config::{Config, Units};
 use pyo3::prelude::*;
 
 mod config;
