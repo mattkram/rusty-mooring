@@ -1,9 +1,15 @@
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 from rusty_mooring import Config
 from rusty_mooring import MooringSystem
+
+if TYPE_CHECKING:
+    from _pytest.fixtures import SubRequest
 
 
 @pytest.fixture()
@@ -13,13 +19,15 @@ def config(config_file: Path) -> Config:
     return config
 
 
-def test_load_mooring_system_from_file(config_file: Path) -> None:
-    """We can load the whole system config from a file via the MooringSystem class."""
-    system = MooringSystem.from_file(config_file.as_posix())
-    assert system.config.line_types["chain"].diameter == 0.127
+@pytest.fixture(params=["from_file", "from_obj"])
+def mooring_system(request: SubRequest, config_file: Path, config: Config) -> MooringSystem:
+    response_map = {
+        "from_file": MooringSystem.from_file(config_file.as_posix()),
+        "from_obj": MooringSystem(config),
+    }
+    return response_map[request.param]
 
 
-def test_load_mooring_system_from_config(config: Config) -> None:
-    """We can instantiate a Mooring system directly from the config."""
-    system = MooringSystem(config)
-    assert system.config.line_types["chain"].diameter == 0.127
+def test_load_mooring_system_from_file(mooring_system: MooringSystem) -> None:
+    """We can load the whole system config from a file or Config object via the MooringSystem class."""
+    assert mooring_system.config.line_types["chain"].diameter == 0.127
