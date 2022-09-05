@@ -1,9 +1,5 @@
 from enum import Enum
 
-class Units(Enum):
-    METRIC = ...
-    ENGLISH = ...
-
 class Config:
     general: GeneralConfig
     line_types: dict[str, LineType]
@@ -11,6 +7,10 @@ class Config:
 
     @classmethod
     def from_file(cls, filename: str) -> Config: ...
+
+class Units(Enum):
+    METRIC = ...
+    ENGLISH = ...
 
 class GeneralConfig:
     units: str

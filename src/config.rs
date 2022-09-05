@@ -18,6 +18,27 @@ pub struct Config {
     pub lines: HashMap<String, Line>,
 }
 
+// TODO: Is there any way to define as Metric in Rust, but make uppercase in Python?
+#[pyclass]
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Units {
+    METRIC,
+    ENGLISH,
+}
+
+/// General configuration.
+#[pyclass]
+#[derive(Clone, Deserialize)]
+pub struct GeneralConfig {
+    #[pyo3(get)]
+    pub units: Units,
+    #[pyo3(get)]
+    pub gravity: f64,
+    #[pyo3(get)]
+    pub water_density: f64,
+}
+
 /// Line type properties.
 #[pyclass]
 #[derive(Clone, Deserialize)]
@@ -52,27 +73,6 @@ pub struct Line {
     bottom_position: [f64; 3],
     #[pyo3(get)]
     segments: Vec<LineSegment>,
-}
-
-// TODO: Is there any way to define as Metric in Rust, but make uppercase in Python?
-#[pyclass]
-#[derive(Clone, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum Units {
-    METRIC,
-    ENGLISH,
-}
-
-/// General configuration.
-#[pyclass]
-#[derive(Clone, Deserialize)]
-pub struct GeneralConfig {
-    #[pyo3(get)]
-    pub units: Units,
-    #[pyo3(get)]
-    pub gravity: f64,
-    #[pyo3(get)]
-    pub water_density: f64,
 }
 
 /// A structural representation of the input configuration.
