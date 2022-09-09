@@ -33,8 +33,10 @@ def test_load_mooring_system_from_file(mooring_system: MooringSystem) -> None:
     assert mooring_system.config.line_types["chain"].diameter == 0.127
 
 
-def test_solve_static(mooring_system: MooringSystem) -> None:
+def test_solve_static(mooring_system: MooringSystem, capsys) -> None:
     """Solve statics and check coordinate output."""
     # TODO: Replace with expected output
     mooring_system.solve_static()
+    print(capsys.readouterr())
+    assert False
     assert mooring_system.get_line_coordinates() == {}

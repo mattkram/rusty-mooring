@@ -14,7 +14,7 @@ pub struct Config {
     #[pyo3(get)]
     line_types: HashMap<String, LineType>,
     #[pyo3(get)]
-    lines: HashMap<String, Line>,
+    pub lines: HashMap<String, Line>,
 }
 
 // TODO: Is there any way to define as Metric in Rust, but make uppercase in Python?
@@ -55,11 +55,11 @@ pub struct LineType {
 #[derive(Clone, Deserialize)]
 pub struct LineSegment {
     #[pyo3(get)]
-    line_type: String,
+    pub line_type: String,
     #[pyo3(get)]
-    length: f64,
+    pub length: f64,
     #[pyo3(get)]
-    num_elements: i32,
+    pub num_elements: i32,
 }
 
 /// A mooring line, consisting of multiple segments.
@@ -67,11 +67,11 @@ pub struct LineSegment {
 #[derive(Clone, Deserialize)]
 pub struct Line {
     #[pyo3(get)]
-    top_position: [f64; 3],
+    pub top_position: [f64; 3],
     #[pyo3(get)]
-    bottom_position: [f64; 3],
+    pub bottom_position: [f64; 3],
     #[pyo3(get)]
-    segments: Vec<LineSegment>,
+    pub segments: Vec<LineSegment>,
 }
 
 /// A structural representation of the input configuration.
