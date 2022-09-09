@@ -25,17 +25,22 @@ def config_file() -> Path:
         units = "metric"
         gravity = 9.81
         water_density = 1025.9
+        water_depth = 2000.0
         extra_value = 10.0
 
         [line_types.polyester]
         diameter        = 0.233
         mass_per_length = 53.7
         axial_stiffness = 3.9e8
+        internal_diameter = 0.0
+        internal_contents_density = 0.0
 
         [line_types.chain]
         diameter        = 0.127
         mass_per_length = 293.98
         axial_stiffness = 9.83e8
+        internal_diameter = 0.0
+        internal_contents_density = 0.0
 
         [lines.Line1]
         top_position    = [ 34, 34, -26.2 ]
