@@ -2,6 +2,7 @@ use pyo3::exceptions::{PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
 use serde_derive::Deserialize;
 use std::collections::HashMap;
+use std::f64::consts::PI;
 use std::fs;
 use toml;
 
@@ -10,9 +11,9 @@ use toml;
 #[derive(Clone, Deserialize)]
 pub struct Config {
     #[pyo3(get)]
-    general: GeneralConfig,
+    pub general: GeneralConfig,
     #[pyo3(get)]
-    line_types: HashMap<String, LineType>,
+    pub line_types: HashMap<String, LineType>,
     #[pyo3(get)]
     pub lines: HashMap<String, Line>,
 }
@@ -33,9 +34,11 @@ pub struct GeneralConfig {
     #[pyo3(get)]
     units: Units,
     #[pyo3(get)]
-    gravity: f64,
+    pub gravity: f64,
     #[pyo3(get)]
-    water_density: f64,
+    pub water_density: f64,
+    #[pyo3(get)]
+    pub water_depth: f64,
 }
 
 /// Line type properties.
@@ -43,11 +46,32 @@ pub struct GeneralConfig {
 #[derive(Clone, Deserialize)]
 pub struct LineType {
     #[pyo3(get)]
-    diameter: f64,
+    pub diameter: f64,
     #[pyo3(get)]
-    mass_per_length: f64,
+    pub mass_per_length: f64,
     #[pyo3(get)]
-    axial_stiffness: f64,
+    pub axial_stiffness: f64,
+    #[pyo3(get)]
+    pub internal_diameter: f64,
+    #[pyo3(get)]
+    pub internal_contents_density: f64,
+}
+
+impl LineType {
+    /// The circular area of the inside of a pipe section.
+    pub fn internal_area(&self) -> f64 {
+        0.25 * PI * self.internal_diameter.powi(2)
+    }
+
+    /// The circular area of exterior profile of the line.
+    pub fn external_area(&self) -> f64 {
+        0.25 * PI * self.diameter.powi(2)
+    }
+
+    /// The total mass per length, including both structural and internal fluid contents.
+    pub fn total_mass_per_length(&self) -> f64 {
+        self.mass_per_length + self.internal_contents_density * self.internal_area()
+    }
 }
 
 /// A line segment, used to build up a full line.
@@ -60,6 +84,13 @@ pub struct LineSegment {
     pub length: f64,
     #[pyo3(get)]
     pub num_elements: i32,
+}
+
+impl LineSegment {
+    /// The length of the discrete elements in the line segment.
+    pub fn element_length(&self) -> f64 {
+        self.length / (self.num_elements as f64)
+    }
 }
 
 /// A mooring line, consisting of multiple segments.
