@@ -50,7 +50,7 @@ pub struct LineType {
     #[pyo3(get)]
     pub mass_per_length: f64,
     #[pyo3(get)]
-    pub axial_stiffness: f64,
+    pub youngs_modulus: f64,
     #[pyo3(get)]
     pub internal_diameter: f64,
     #[pyo3(get)]
@@ -66,6 +66,11 @@ impl LineType {
     /// The circular area of exterior profile of the line.
     pub fn external_area(&self) -> f64 {
         0.25 * PI * self.diameter.powi(2)
+    }
+
+    /// The axial stiffness, i.e. EA
+    pub fn axial_stiffness(&self) -> f64 {
+        self.youngs_modulus * (self.external_area() - self.internal_area())
     }
 
     /// The total mass per length, including both structural and internal fluid contents.

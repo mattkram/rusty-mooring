@@ -31,14 +31,14 @@ def config_file() -> Path:
         [line_types.polyester]
         diameter        = 0.233
         mass_per_length = 53.7
-        axial_stiffness = 3.9e8
+        youngs_modulus = 9.15e9
         internal_diameter = 0.0
         internal_contents_density = 0.0
 
         [line_types.chain]
         diameter        = 0.127
         mass_per_length = 293.98
-        axial_stiffness = 9.83e8
+        youngs_modulus = 7.76e10
         internal_diameter = 0.0
         internal_contents_density = 0.0
 

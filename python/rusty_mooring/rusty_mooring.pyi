@@ -20,7 +20,7 @@ class GeneralConfig:
 class LineType:
     diameter: float
     mass_per_length: float
-    axial_stiffness: float
+    youngs_modulus: float
 
 class LineSegment:
     line_type: str

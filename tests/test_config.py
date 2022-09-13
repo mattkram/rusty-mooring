@@ -29,12 +29,12 @@ def test_load_line_types_from_file(config: Config) -> None:
     polyester = config.line_types["polyester"]
     assert polyester.diameter == 0.233
     assert polyester.mass_per_length == 53.7
-    assert polyester.axial_stiffness == 3.9e8
+    assert polyester.youngs_modulus == 9.15e9
 
     chain = config.line_types["chain"]
     assert chain.diameter == 0.127
     assert chain.mass_per_length == 293.98
-    assert chain.axial_stiffness == 9.83e8
+    assert chain.youngs_modulus == 7.76e10
 
 
 def test_load_lines_from_file(config: Config) -> None:
