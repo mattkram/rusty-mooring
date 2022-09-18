@@ -43,19 +43,21 @@ def config_file() -> Path:
         internal_contents_density = 0.0
 
         [lines.Line1]
-        top_position    = [ 34, 34, -26.2 ]
-        bottom_position = [ 1700, 10, -1961.74 ]
+        top_position    = [   30, 30, -25 ]
+        bottom_position = [ 1700, 10, -2000 ]
         segments = [
-            {line_type="chain", length=1000, num_elements=200},
-            {line_type="polyester", length=1800, num_elements=360},
+            {line_type="chain", length=100, num_elements=10},
+            {line_type="polyester", length=2600, num_elements=20},
+            {line_type="chain", length=100, num_elements=10},
         ]
 
         [lines.Line2]
-        top_position    = [ 34, 34, -26.2 ]
-        bottom_position = [ 1700, 10, -1961.74 ]
+        top_position    = [   -30, -30, -25 ]
+        bottom_position = [ -1700, -10, -2000 ]
         segments = [
-            {line_type="chain", length=1000, num_elements=200},
-            {line_type="polyester", length=1800, num_elements=360},
+            {line_type="chain", length=100, num_elements=10},
+            {line_type="polyester", length=2600, num_elements=20},
+            {line_type="chain", length=100, num_elements=10},
         ]
         """
     )

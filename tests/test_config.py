@@ -42,16 +42,20 @@ def test_load_lines_from_file(config: Config) -> None:
     assert len(config.lines) == 2
 
     line = config.lines["Line1"]
-    assert line.top_position == [34, 34, -26.2]
-    assert line.bottom_position == [1700, 10, -1961.74]
+    assert line.top_position == [30, 30, -25]
+    assert line.bottom_position == [1700, 10, -2000]
 
     assert line.segments[0].line_type == "chain"
-    assert line.segments[0].length == 1000.0
-    assert line.segments[0].num_elements == 200
+    assert line.segments[0].length == 100.0
+    assert line.segments[0].num_elements == 10
 
     assert line.segments[1].line_type == "polyester"
-    assert line.segments[1].length == 1800.0
-    assert line.segments[1].num_elements == 360
+    assert line.segments[1].length == 2600.0
+    assert line.segments[1].num_elements == 20
+
+    assert line.segments[2].line_type == "chain"
+    assert line.segments[2].length == 100.0
+    assert line.segments[2].num_elements == 10
 
 
 def test_config_from_file_missing_raises_error() -> None:
