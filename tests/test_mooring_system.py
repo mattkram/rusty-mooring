@@ -36,6 +36,7 @@ def test_load_mooring_system_from_file(mooring_system: MooringSystem) -> None:
 
 def test_solve_static(mooring_system: MooringSystem, capsys: CaptureFixture) -> None:
     """Solve statics and check coordinate output."""
-    # TODO: Replace with expected output
-    mooring_system.solve_static()
-    assert mooring_system.get_line_coordinates() == {}
+    # TODO: This is a regression test that is sensitive and should be updated after refactoring
+    results = mooring_system.solve_static()
+    assert results["Line1"][0].tension == pytest.approx(323018.156)
+    assert results["Line2"][0].tension == pytest.approx(323018.156)
