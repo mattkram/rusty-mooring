@@ -10,5 +10,5 @@ def mypy(session: Session) -> None:
 
 @nox.session(python=["3.9"])
 def pytest(session: Session) -> None:
-    session.install(".[test]")
+    session.install("pytest", ".")
     session.run("pytest")
