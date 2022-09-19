@@ -69,7 +69,7 @@ impl MooringSystem {
     /// Construct a new MooringSystem from a Config.
     #[new]
     fn new(config: Config) -> Self {
-        MooringSystem { config: config }
+        MooringSystem { config }
     }
 
     /// Solve the static equilibrium of the system.
