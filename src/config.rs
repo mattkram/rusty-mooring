@@ -88,7 +88,7 @@ pub struct LineSegment {
     #[pyo3(get)]
     pub length: f64,
     #[pyo3(get)]
-    pub num_elements: i32,
+    pub num_elements: usize,
 }
 
 impl LineSegment {

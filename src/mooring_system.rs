@@ -129,31 +129,27 @@ impl MooringSystem {
 
         dbg!(total_length, submerged_length, submerged_weight);
 
-        // TODO: This assumes no pre-tension
-        let top_tension = submerged_weight;
-        dbg!(top_tension);
-
         let depth = line.top_position[2] - line.bottom_position[2];
-        let mut err = -depth;
-        let mut err_lower = depth / 10.0;
-        let mut err_upper = err;
+        let mut err_lower = 0.1 * depth;
+        let mut err_upper = depth;
         let mut phi_lower = 0.0;
-        let mut phi_upper = 89.0;
+        let mut phi_upper = 89.0 * PI / 180.0;
 
-        let num_nodes = (total_num_elements + 1) as usize;
         let max_it = 100;
 
-        let mut nodes: Vec<Node> = vec![Node::new(); num_nodes];
+        let mut nodes: Vec<Node> = vec![Node::new(); total_num_elements + 1];
 
+        // TODO: This assumes no pre-tension
+        let top_tension = submerged_weight;
         let mut top_ang = 0.0;
 
         // Here, we will iterate through multiple times until the solution converges
         for i in 0..max_it {
             // Set the top angle in first and second iterations (to bound solution)
             if i == 0 {
-                top_ang = 0.0;
+                top_ang = phi_lower;
             } else if i == 1 {
-                top_ang = 89.0 * PI / 180.0;
+                top_ang = phi_upper;
             }
             dbg!(top_ang);
 
@@ -243,7 +239,7 @@ impl MooringSystem {
                          i, node.arc_length, node.tension, node.declination_angle, node.x_corr, node.y_corr);
             }
 
-            err = -(nodes.last().unwrap().y_corr + depth);
+            let err = -(nodes.last().unwrap().y_corr + depth);
             if i == 0 {
                 err_lower = err;
                 phi_lower = top_ang;
