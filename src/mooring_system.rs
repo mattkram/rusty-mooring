@@ -3,49 +3,6 @@ use pyo3::prelude::*;
 use std::collections::HashMap;
 use std::f64::consts::PI;
 
-#[pyclass]
-pub struct MooringSystem {
-    #[pyo3(get)]
-    config: Config,
-}
-
-#[pymethods]
-impl MooringSystem {
-    /// Load the configuration from a TOML file and create a new instance.
-    #[staticmethod]
-    pub fn from_file(filename: String) -> PyResult<MooringSystem> {
-        let config = match Config::from_file(filename) {
-            Ok(c) => c,
-            Err(e) => return Err(e),
-        };
-        let system = MooringSystem::new(config);
-        Ok(system)
-    }
-
-    /// Construct a new MooringSystem from a Config.
-    #[new]
-    fn new(config: Config) -> Self {
-        MooringSystem { config: config }
-    }
-
-    /// Solve the static equilibrium of the system.
-    fn solve_static(&self) -> HashMap<&String, Vec<Node>> {
-        let mut results: HashMap<&String, Vec<Node>> = HashMap::new();
-        for (line_name, line) in self.config.lines.iter() {
-            let nodes = self.solve_catenary_equation(line);
-            results.insert(line_name, nodes);
-        }
-
-        results
-    }
-
-    /// Return a vector of all coordinates along each line.
-    /// The return type is a mapping of line name to a vector of 3d coordinates.
-    fn get_line_coordinates(&self) -> HashMap<String, Vec<[f64; 3]>> {
-        HashMap::new()
-    }
-}
-
 /// A general data structure to represent 3d coordinates.
 #[pyclass]
 #[derive(Clone)]
@@ -93,6 +50,50 @@ impl Node {
     }
 }
 
+#[pyclass]
+pub struct MooringSystem {
+    #[pyo3(get)]
+    config: Config,
+}
+
+#[pymethods]
+impl MooringSystem {
+    /// Load the configuration from a TOML file and create a new instance.
+    #[staticmethod]
+    pub fn from_file(filename: String) -> PyResult<MooringSystem> {
+        let config = match Config::from_file(filename) {
+            Ok(c) => c,
+            Err(e) => return Err(e),
+        };
+        let system = MooringSystem::new(config);
+        Ok(system)
+    }
+
+    /// Construct a new MooringSystem from a Config.
+    #[new]
+    fn new(config: Config) -> Self {
+        MooringSystem { config: config }
+    }
+
+    /// Solve the static equilibrium of the system.
+    fn solve_static(&self) -> HashMap<&String, Vec<Node>> {
+        let mut results: HashMap<&String, Vec<Node>> = HashMap::new();
+        for (line_name, line) in self.config.lines.iter() {
+            let nodes = self.solve_catenary_equation(line);
+            results.insert(line_name, nodes);
+        }
+
+        results
+    }
+
+    /// Return a vector of all coordinates along each line.
+    /// The return type is a mapping of line name to a vector of 3d coordinates.
+    fn get_line_coordinates(&self) -> HashMap<String, Vec<[f64; 3]>> {
+        HashMap::new()
+    }
+}
+
+/// Rust-only methods
 impl MooringSystem {
     /// Solve the catenary equation for a specific line.
     fn solve_catenary_equation(&self, line: &Line) -> Vec<Node> {
@@ -124,14 +125,14 @@ impl MooringSystem {
         // Make immutable after the summing
         let total_length = total_length;
         let total_num_elements = total_num_elements;
+        let submerged_weight = submerged_weight;
+        let submerged_length = submerged_length;
 
-        println!("total_length: {:?}", total_length);
-        println!("submerged_length: {:?}", submerged_length);
-        println!("submerged_weight: {:?}", submerged_weight);
+        dbg!(total_length, submerged_length, submerged_weight);
 
         // TODO: This assumes no pre-tension
         let top_tension = submerged_weight;
-        println!("top_tension: {:?}", top_tension);
+        dbg!(top_tension);
 
         let depth = line.top_position[2] - line.bottom_position[2];
         // TODO: Remove the magic 2000 and figure out a better heuristic for lower-bound
@@ -142,7 +143,7 @@ impl MooringSystem {
         let mut phi_lower = 0.0;
         let mut phi_upper = 89.0;
 
-        println!("err_depth: {:?}, err: {:?}", err_depth, err);
+        dbg!(err_depth, err);
 
         let num_nodes = (total_num_elements + 1) as usize;
         let mut node_index;
@@ -170,7 +171,7 @@ impl MooringSystem {
                 1 => 89.0 * PI / 180.0,
                 _ => top_new,
             };
-            println!("top_ang: {:?}", top_ang);
+            dbg!(top_ang);
 
             nodes[node_index].tension = top_tension;
             nodes[node_index].declination_angle = top_ang;
@@ -184,7 +185,7 @@ impl MooringSystem {
                 y[1] = current_node.declination_angle;
                 y[2] = current_node.x_corr;
                 y[3] = current_node.y_corr;
-                println!("{:?}", y);
+                dbg!(&y);
 
                 // TODO: This is hard-coded
                 let seg = if j < 10 {
@@ -197,6 +198,7 @@ impl MooringSystem {
                 // We negate because we are going in decreasing arclength ...
                 let seg = -seg;
 
+                // TODO: Remove the hard-code
                 let line_type_name = if j < 10 {
                     &line.segments[0].line_type
                 } else if j < 30 {
@@ -219,14 +221,14 @@ impl MooringSystem {
                         2 => 1.0,
                         _ => 2.0,
                     };
-                    println!("{}", seg);
                     y[0] = y0 + f0[k] * seg / coeff;
                     y[1] = y1 + f1[k] * seg / coeff;
                     y[2] = y2 + f2[k] * seg / coeff;
                     y[3] = y3 + f3[k] * seg / coeff;
-                    println!("{:?}", y);
+                    dbg!(&y);
                 }
 
+                // f0, f1, etc. are k_1, k_2, etc. in my notes
                 nodes[node_index - 1].tension = nodes[node_index].tension
                     + seg * (f0[0] + 2.0 * f0[1] + 2.0 * f0[2] + f0[3]) / 6.0;
                 nodes[node_index - 1].declination_angle = nodes[node_index].declination_angle
@@ -260,7 +262,7 @@ impl MooringSystem {
                 phi_upper = top_ang;
             }
             top_new = phi_lower - err_lower * (phi_upper - phi_lower) / (err_upper - err_lower);
-            println!("top_new = {}", top_new);
+            dbg!(top_new);
         }
 
         self.rotate_nodes(line, &mut nodes);
