@@ -61,10 +61,7 @@ impl MooringSystem {
     /// Load the configuration from a TOML file and create a new instance.
     #[staticmethod]
     pub fn from_file(filename: String) -> PyResult<MooringSystem> {
-        let config = match Config::from_file(filename) {
-            Ok(c) => c,
-            Err(e) => return Err(e),
-        };
+        let config = Config::from_file(filename)?;
         let system = MooringSystem::new(config);
         Ok(system)
     }
