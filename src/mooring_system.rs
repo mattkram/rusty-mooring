@@ -147,7 +147,6 @@ impl MooringSystem {
         let num_nodes = (total_num_elements + 1) as usize;
         let mut node_index;
         let max_it = 100;
-        let mut top_new = 0.0;
 
         let mut nodes: Vec<Node> = vec![Node::new(); num_nodes];
 
@@ -156,20 +155,23 @@ impl MooringSystem {
         let mut y1 = 0.0;
         let mut y2 = 0.0;
         let mut y3 = 0.0;
-        let mut f0 = vec![0.0; 4];
-        let mut f1 = vec![0.0; 4];
-        let mut f2 = vec![0.0; 4];
-        let mut f3 = vec![0.0; 4];
+        let mut f0 = vec![0.0; 4]; // tension
+        let mut f1 = vec![0.0; 4]; // phi
+        let mut f2 = vec![0.0; 4]; // x
+        let mut f3 = vec![0.0; 4]; // y
+
+        let mut top_ang = 0.0;
 
         // Here, we will iterate through multiple times until the solution converges
         for i in 0..max_it {
             node_index = num_nodes - 1;
-            // Set the top angle
-            let top_ang = match i {
-                0 => 0.0,
-                1 => 89.0 * PI / 180.0,
-                _ => top_new,
-            };
+
+            // Set the top angle in first and second iterations (to bound solution)
+            if i == 0 {
+                top_ang = 0.0;
+            } else if i == 1 {
+                top_ang = 89.0 * PI / 180.0;
+            }
             dbg!(top_ang);
 
             nodes[node_index].tension = top_tension;
@@ -260,8 +262,7 @@ impl MooringSystem {
                 err_upper = err;
                 phi_upper = top_ang;
             }
-            top_new = phi_lower - err_lower * (phi_upper - phi_lower) / (err_upper - err_lower);
-            dbg!(top_new);
+            top_ang = phi_lower - err_lower * (phi_upper - phi_lower) / (err_upper - err_lower);
         }
 
         self.rotate_nodes(line, &mut nodes);
