@@ -134,15 +134,11 @@ impl MooringSystem {
         dbg!(top_tension);
 
         let depth = line.top_position[2] - line.bottom_position[2];
-        // TODO: Remove the magic 2000 and figure out a better heuristic for lower-bound
-        let err_depth = -depth / 2000.0;
         let mut err = -depth;
         let mut err_lower = depth / 10.0;
         let mut err_upper = err;
         let mut phi_lower = 0.0;
         let mut phi_upper = 89.0;
-
-        dbg!(err_depth, err);
 
         let num_nodes = (total_num_elements + 1) as usize;
         let max_it = 100;
