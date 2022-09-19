@@ -150,16 +150,6 @@ impl MooringSystem {
 
         let mut nodes: Vec<Node> = vec![Node::new(); num_nodes];
 
-        let mut y: Vec<f64> = vec![0.0; 4];
-        let mut y0 = 0.0;
-        let mut y1 = 0.0;
-        let mut y2 = 0.0;
-        let mut y3 = 0.0;
-        let mut f0 = vec![0.0; 4]; // tension
-        let mut f1 = vec![0.0; 4]; // phi
-        let mut f2 = vec![0.0; 4]; // x
-        let mut f3 = vec![0.0; 4]; // y
-
         let mut top_ang = 0.0;
 
         // Here, we will iterate through multiple times until the solution converges
@@ -180,7 +170,17 @@ impl MooringSystem {
             nodes[node_index].y_corr = 0.0;
             nodes[node_index].arc_length = total_length;
 
-            for j in 0..40 {
+            for j in 0..(num_nodes - 1) {
+                let mut y: Vec<f64> = vec![0.0; 4];
+                let mut y0 = 0.0;
+                let mut y1 = 0.0;
+                let mut y2 = 0.0;
+                let mut y3 = 0.0;
+                let mut f0 = vec![0.0; 4]; // tension
+                let mut f1 = vec![0.0; 4]; // phi
+                let mut f2 = vec![0.0; 4]; // x
+                let mut f3 = vec![0.0; 4]; // y
+
                 let current_node = &nodes[node_index];
                 y[0] = current_node.tension;
                 y[1] = current_node.declination_angle;
