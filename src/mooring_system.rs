@@ -60,6 +60,8 @@ pub struct Node {
     pub x_corr: f64,
     #[pyo3(get)]
     pub y_corr: f64,
+    #[pyo3(get)]
+    pub coords: [f64; 3],
 }
 
 impl Node {
@@ -70,6 +72,7 @@ impl Node {
             arc_length: 0.0,
             x_corr: 0.0,
             y_corr: 0.0,
+            coords: [0.0; 3],
         }
     }
 }
@@ -244,7 +247,23 @@ impl MooringSystem {
             println!("top_new = {}", top_new);
         }
 
+        self.rotate_nodes(line, &mut nodes);
+
         nodes
+    }
+
+    /// Rotate the nodes from in-plane to 3d space, and set the coords property of the nodes.
+    fn rotate_nodes(&self, line: &Line, nodes: &mut Vec<Node>) {
+        let dx = line.bottom_position[0] - line.top_position[0];
+        let dy = line.bottom_position[1] - line.top_position[1];
+        let spread_angle = dy.atan2(dx);
+        dbg!(dx, dy, spread_angle);
+
+        for node in nodes.iter_mut() {
+            node.coords[0] = line.top_position[0] + node.x_corr.abs() * spread_angle.cos();
+            node.coords[1] = line.top_position[1] + node.x_corr.abs() * spread_angle.sin();
+            node.coords[2] = line.top_position[2] + node.y_corr;
+        }
     }
 
     fn rhs(&self, line_type: &LineType, y: &Vec<f64>) -> (f64, f64, f64, f64) {

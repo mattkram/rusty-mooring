@@ -38,6 +38,7 @@ class Node:
     arc_length: float
     x_corr: float
     y_corr: float
+    coords: list[float]
 
 class MooringSystem:
     config: Config
