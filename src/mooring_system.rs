@@ -73,6 +73,8 @@ impl MooringSystem {
     }
 
     /// Solve the static equilibrium of the system.
+    /// Returns a hash map whose key is a reference to the line name and value is
+    /// a vector of `Node` objects.
     fn solve_static(&self) -> HashMap<&String, Vec<Node>> {
         let mut results: HashMap<&String, Vec<Node>> = HashMap::new();
         for (line_name, line) in self.config.lines.iter() {
