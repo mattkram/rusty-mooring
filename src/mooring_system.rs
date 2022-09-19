@@ -162,15 +162,14 @@ impl MooringSystem {
             dbg!(top_ang);
 
             // Set the properties at the top node, before integration
-            // TODO: The nodes are ordered from bottom-to-top, but it makes more sense to switch that
-            let mut top_node = nodes.last_mut().unwrap();
+            let mut top_node = nodes.first_mut().unwrap();
             top_node.tension = top_tension;
             top_node.declination_angle = top_ang;
             top_node.x_corr = 0.0;
             top_node.y_corr = 0.0;
-            top_node.arc_length = total_length;
+            top_node.arc_length = 0.0;
 
-            for node_index in (1..nodes.len()).rev() {
+            for node_index in 0..(nodes.len() - 1) {
                 let mut y: Vec<f64> = vec![0.0; 4];
                 let mut y0 = 0.0;
                 let mut y1 = 0.0;
@@ -189,21 +188,21 @@ impl MooringSystem {
                 dbg!(&y);
 
                 // TODO: This is hard-coded
-                let j = nodes.len() - node_index - 1;
-                let seg = if j < 10 {
+                let seg = if node_index < 10 {
                     line.segments[0].element_length()
-                } else if j < 30 {
+                } else if node_index < 30 {
                     line.segments[1].element_length()
                 } else {
                     line.segments[2].element_length()
                 };
                 // We negate because we are going in decreasing arclength ...
+                // TODO: I'm not actually sure why this is negated
                 let seg = -seg;
 
                 // TODO: Remove the hard-code
-                let line_type_name = if j < 10 {
+                let line_type_name = if node_index < 10 {
                     &line.segments[0].line_type
-                } else if j < 30 {
+                } else if node_index < 30 {
                     &line.segments[1].line_type
                 } else {
                     &line.segments[2].line_type
@@ -231,16 +230,16 @@ impl MooringSystem {
                 }
 
                 // f0, f1, etc. are k_1, k_2, etc. in my notes
-                nodes[node_index - 1].tension = nodes[node_index].tension
+                nodes[node_index + 1].tension = nodes[node_index].tension
                     + seg * (f0[0] + 2.0 * f0[1] + 2.0 * f0[2] + f0[3]) / 6.0;
-                nodes[node_index - 1].declination_angle = nodes[node_index].declination_angle
+                nodes[node_index + 1].declination_angle = nodes[node_index].declination_angle
                     + seg * (f1[0] + 2.0 * f1[1] + 2.0 * f1[2] + f1[3]) / 6.0;
-                nodes[node_index - 1].x_corr = nodes[node_index].x_corr
+                nodes[node_index + 1].x_corr = nodes[node_index].x_corr
                     + seg * (f2[0] + 2.0 * f2[1] + 2.0 * f2[2] + f2[3]) / 6.0;
-                nodes[node_index - 1].y_corr = nodes[node_index].y_corr
+                nodes[node_index + 1].y_corr = nodes[node_index].y_corr
                     + seg * (f3[0] + 2.0 * f3[1] + 2.0 * f3[2] + f3[3]) / 6.0;
 
-                nodes[node_index - 1].arc_length = nodes[node_index].arc_length - seg;
+                nodes[node_index + 1].arc_length = nodes[node_index].arc_length - seg;
             }
 
             for (i, node) in nodes.iter().enumerate() {
@@ -248,7 +247,7 @@ impl MooringSystem {
                          i, node.arc_length, node.tension, node.declination_angle, node.x_corr, node.y_corr);
             }
 
-            err = -(nodes[0].y_corr + depth);
+            err = -(nodes.last().unwrap().y_corr + depth);
             if i == 0 {
                 err_lower = err;
                 phi_lower = top_ang;

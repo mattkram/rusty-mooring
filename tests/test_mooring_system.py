@@ -38,8 +38,12 @@ def test_solve_static(mooring_system: MooringSystem, capsys: CaptureFixture) -> 
     """Solve statics and check coordinate output."""
     # TODO: This is a regression test that is sensitive and should be updated after refactoring
     results = mooring_system.solve_static()
-    assert results["Line1"][0].tension == pytest.approx(323018.156)
-    assert results["Line2"][0].tension == pytest.approx(323018.156)
-    assert results["Line1"][-1].coords.x == 30.0
-    assert results["Line1"][-1].coords.y == 30.0
-    assert results["Line1"][-1].coords.z == -25.0
+    assert results["Line1"][-1].tension == pytest.approx(323018.156)
+    assert results["Line2"][-1].tension == pytest.approx(323018.156)
+
+    assert results["Line1"][0].arc_length == 0.0
+    assert results["Line1"][-1].arc_length == 2800.0
+
+    assert results["Line1"][0].coords.x == 30.0
+    assert results["Line1"][0].coords.y == 30.0
+    assert results["Line1"][0].coords.z == -25.0
