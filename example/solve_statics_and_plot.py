@@ -12,7 +12,7 @@ def plot_results(results: dict[str, list[Node]]) -> None:
     plt.figure()
     ax = plt.axes(projection="3d")
     for line_name, nodes in results.items():
-        coords = np.array([[node.coords[0], node.coords[1], node.coords[2]] for node in nodes])
+        coords = np.array([[node.coords.x, node.coords.y, node.coords.z] for node in nodes])
         ax.plot3D(coords[:, 0], coords[:, 1], coords[:, 2])
     ax.set_xlabel("x [m]")
     ax.set_ylabel("y [m]")

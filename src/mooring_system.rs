@@ -46,6 +46,18 @@ impl MooringSystem {
     }
 }
 
+/// A general data structure to represent 3d coordinates.
+#[pyclass]
+#[derive(Clone)]
+pub struct Coordinate {
+    #[pyo3(get)]
+    pub x: f64,
+    #[pyo3(get)]
+    pub y: f64,
+    #[pyo3(get)]
+    pub z: f64,
+}
+
 /// A data structure to store the nodal properties along a line.
 #[pyclass]
 #[derive(Clone)]
@@ -61,7 +73,7 @@ pub struct Node {
     #[pyo3(get)]
     pub y_corr: f64,
     #[pyo3(get)]
-    pub coords: [f64; 3],
+    pub coords: Coordinate,
 }
 
 impl Node {
@@ -72,7 +84,11 @@ impl Node {
             arc_length: 0.0,
             x_corr: 0.0,
             y_corr: 0.0,
-            coords: [0.0; 3],
+            coords: Coordinate {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
         }
     }
 }
@@ -260,9 +276,9 @@ impl MooringSystem {
         dbg!(dx, dy, spread_angle);
 
         for node in nodes.iter_mut() {
-            node.coords[0] = line.top_position[0] + node.x_corr.abs() * spread_angle.cos();
-            node.coords[1] = line.top_position[1] + node.x_corr.abs() * spread_angle.sin();
-            node.coords[2] = line.top_position[2] + node.y_corr;
+            node.coords.x = line.top_position[0] + node.x_corr.abs() * spread_angle.cos();
+            node.coords.y = line.top_position[1] + node.x_corr.abs() * spread_angle.sin();
+            node.coords.z = line.top_position[2] + node.y_corr;
         }
     }
 

@@ -32,13 +32,18 @@ class Line:
     bottom_position: list[float]
     segments: list[LineSegment]
 
+class Coordinate:
+    x: float
+    y: float
+    z: float
+
 class Node:
     tension: float
     declination_angle: float
     arc_length: float
     x_corr: float
     y_corr: float
-    coords: list[float]
+    coords: Coordinate
 
 class MooringSystem:
     config: Config
