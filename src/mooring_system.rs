@@ -282,6 +282,8 @@ impl MooringSystem {
         }
     }
 
+    /// Calculate the right-hand side of the catenary equation.
+    /// This is used when performing RK4 integration to solve the differential equation.
     fn rhs(&self, line_type: &LineType, y: &Vec<f64>) -> (f64, f64, f64, f64) {
         let wetted_weight = self.config.general.gravity
             * (line_type.total_mass_per_length()
