@@ -145,7 +145,6 @@ impl MooringSystem {
         dbg!(err_depth, err);
 
         let num_nodes = (total_num_elements + 1) as usize;
-        let mut node_index;
         let max_it = 100;
 
         let mut nodes: Vec<Node> = vec![Node::new(); num_nodes];
@@ -154,8 +153,6 @@ impl MooringSystem {
 
         // Here, we will iterate through multiple times until the solution converges
         for i in 0..max_it {
-            node_index = num_nodes - 1;
-
             // Set the top angle in first and second iterations (to bound solution)
             if i == 0 {
                 top_ang = 0.0;
@@ -164,13 +161,16 @@ impl MooringSystem {
             }
             dbg!(top_ang);
 
-            nodes[node_index].tension = top_tension;
-            nodes[node_index].declination_angle = top_ang;
-            nodes[node_index].x_corr = 0.0;
-            nodes[node_index].y_corr = 0.0;
-            nodes[node_index].arc_length = total_length;
+            // Set the properties at the top node, before integration
+            // TODO: The nodes are ordered from bottom-to-top, but it makes more sense to switch that
+            let mut top_node = nodes.last_mut().unwrap();
+            top_node.tension = top_tension;
+            top_node.declination_angle = top_ang;
+            top_node.x_corr = 0.0;
+            top_node.y_corr = 0.0;
+            top_node.arc_length = total_length;
 
-            for j in 0..(num_nodes - 1) {
+            for node_index in (1..nodes.len()).rev() {
                 let mut y: Vec<f64> = vec![0.0; 4];
                 let mut y0 = 0.0;
                 let mut y1 = 0.0;
@@ -189,6 +189,7 @@ impl MooringSystem {
                 dbg!(&y);
 
                 // TODO: This is hard-coded
+                let j = nodes.len() - node_index - 1;
                 let seg = if j < 10 {
                     line.segments[0].element_length()
                 } else if j < 30 {
@@ -240,7 +241,6 @@ impl MooringSystem {
                     + seg * (f3[0] + 2.0 * f3[1] + 2.0 * f3[2] + f3[3]) / 6.0;
 
                 nodes[node_index - 1].arc_length = nodes[node_index].arc_length - seg;
-                node_index -= 1;
             }
 
             for (i, node) in nodes.iter().enumerate() {
