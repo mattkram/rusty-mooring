@@ -162,22 +162,7 @@ impl MooringSystem {
             top_node.arc_length = 0.0;
 
             for node_index in 0..(nodes.len() - 1) {
-                let mut y: Vec<f64> = vec![0.0; 4];
-                let mut y0 = 0.0;
-                let mut y1 = 0.0;
-                let mut y2 = 0.0;
-                let mut y3 = 0.0;
-                let mut f0 = vec![0.0; 4]; // tension
-                let mut f1 = vec![0.0; 4]; // phi
-                let mut f2 = vec![0.0; 4]; // x
-                let mut f3 = vec![0.0; 4]; // y
-
                 let current_node = &nodes[node_index];
-                y[0] = current_node.tension;
-                y[1] = current_node.declination_angle;
-                y[2] = current_node.x_corr;
-                y[3] = current_node.y_corr;
-                dbg!(&y);
 
                 // TODO: This is hard-coded
                 let seg = if node_index < 10 {
@@ -201,36 +186,40 @@ impl MooringSystem {
                 };
                 let line_type = &self.config.line_types[line_type_name];
 
-                for k in 0..4 {
-                    if k == 0 {
-                        y0 = y[0];
-                        y1 = y[1];
-                        y2 = y[2];
-                        y3 = y[3];
-                    }
-                    (f0[k], f1[k], f2[k], f3[k]) = self.rhs(line_type, &y);
+                let mut y = [
+                    current_node.tension,
+                    current_node.declination_angle,
+                    current_node.x_corr,
+                    current_node.y_corr,
+                ];
+                let y_init = y;
+                // dim 0 is iteration k, dim 1 is [tension, phi, x, y]
+                let mut slope = [[0.0; 4]; 4];
 
-                    let coeff = match k {
-                        2 => 1.0,
-                        _ => 2.0,
+                // There are 4 iterations in Runge-Kutta method
+                for k in 0..4 {
+                    slope[k] = self.rhs(line_type, &y);
+
+                    let step = match k {
+                        2 => seg, // 2  because we set the new y before the next iteration
+                        _ => seg / 2.0,
                     };
-                    y[0] = y0 + f0[k] * seg / coeff;
-                    y[1] = y1 + f1[k] * seg / coeff;
-                    y[2] = y2 + f2[k] * seg / coeff;
-                    y[3] = y3 + f3[k] * seg / coeff;
+                    // New y at which to evaluate RHS
+                    for i in 0..4 {
+                        y[i] = y_init[i] + step * slope[k][i];
+                    }
                     dbg!(&y);
                 }
 
-                // f0, f1, etc. are k_1, k_2, etc. in my notes
-                nodes[node_index + 1].tension = nodes[node_index].tension
-                    + seg * (f0[0] + 2.0 * f0[1] + 2.0 * f0[2] + f0[3]) / 6.0;
-                nodes[node_index + 1].declination_angle = nodes[node_index].declination_angle
-                    + seg * (f1[0] + 2.0 * f1[1] + 2.0 * f1[2] + f1[3]) / 6.0;
-                nodes[node_index + 1].x_corr = nodes[node_index].x_corr
-                    + seg * (f2[0] + 2.0 * f2[1] + 2.0 * f2[2] + f2[3]) / 6.0;
-                nodes[node_index + 1].y_corr = nodes[node_index].y_corr
-                    + seg * (f3[0] + 2.0 * f3[1] + 2.0 * f3[2] + f3[3]) / 6.0;
-
+                let mut y_solved = y_init;
+                for i in 0..y_solved.len() {
+                    y_solved[i] += seg / 6.0
+                        * (slope[0][i] + 2.0 * slope[1][i] + 2.0 * slope[2][i] + slope[3][i]);
+                }
+                nodes[node_index + 1].tension = y_solved[0];
+                nodes[node_index + 1].declination_angle = y_solved[1];
+                nodes[node_index + 1].x_corr = y_solved[2];
+                nodes[node_index + 1].y_corr = y_solved[3];
                 nodes[node_index + 1].arc_length = nodes[node_index].arc_length - seg;
             }
 
@@ -277,16 +266,16 @@ impl MooringSystem {
 
     /// Calculate the right-hand side of the catenary equation.
     /// This is used when performing RK4 integration to solve the differential equation.
-    fn rhs(&self, line_type: &LineType, y: &Vec<f64>) -> (f64, f64, f64, f64) {
+    fn rhs(&self, line_type: &LineType, y: &[f64; 4]) -> [f64; 4] {
         let wetted_weight = self.config.general.gravity
             * (line_type.total_mass_per_length()
                 - self.config.general.water_density * line_type.external_area());
         let stretch = y[0] / line_type.axial_stiffness();
-        (
+        [
             wetted_weight * y[1].sin(),
             wetted_weight * y[1].cos() / y[0],
             (1.0 + stretch) * y[1].cos(),
             (1.0 + stretch) * y[1].sin(),
-        )
+        ]
     }
 }
