@@ -164,23 +164,17 @@ impl MooringSystem {
             for node_index in 0..(nodes.len() - 1) {
                 let current_node = &nodes[node_index];
 
-                // TODO: This is hard-coded
-                let seg = if node_index < 10 {
-                    line.segments[0].element_length()
-                } else if node_index < 30 {
-                    line.segments[1].element_length()
-                } else {
-                    line.segments[2].element_length()
-                };
-
-                // TODO: Remove the hard-code
-                let line_type_name = if node_index < 10 {
-                    &line.segments[0].line_type
-                } else if node_index < 30 {
-                    &line.segments[1].line_type
-                } else {
-                    &line.segments[2].line_type
-                };
+                let mut count = 0;
+                let mut seg = 0.0;
+                let mut line_type_name = &String::new();
+                for segment in &line.segments {
+                    count += segment.num_elements;
+                    if node_index < count {
+                        seg = segment.element_length();
+                        line_type_name = &segment.line_type;
+                        break;
+                    }
+                }
                 let line_type = &self.config.line_types[line_type_name];
 
                 let mut y = [
