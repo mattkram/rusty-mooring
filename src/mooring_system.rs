@@ -172,9 +172,6 @@ impl MooringSystem {
                 } else {
                     line.segments[2].element_length()
                 };
-                // We negate because we are going in decreasing arclength ...
-                // TODO: I'm not actually sure why this is negated
-                let seg = -seg;
 
                 // TODO: Remove the hard-code
                 let line_type_name = if node_index < 10 {
@@ -220,7 +217,7 @@ impl MooringSystem {
                 nodes[node_index + 1].declination_angle = y_solved[1];
                 nodes[node_index + 1].x_corr = y_solved[2];
                 nodes[node_index + 1].y_corr = y_solved[3];
-                nodes[node_index + 1].arc_length = nodes[node_index].arc_length - seg;
+                nodes[node_index + 1].arc_length = nodes[node_index].arc_length + seg;
             }
 
             for (i, node) in nodes.iter().enumerate() {
@@ -271,11 +268,12 @@ impl MooringSystem {
             * (line_type.total_mass_per_length()
                 - self.config.general.water_density * line_type.external_area());
         let stretch = y[0] / line_type.axial_stiffness();
+        // These have been negated to prevent the need for the step to be negative ...
         [
-            wetted_weight * y[1].sin(),
-            wetted_weight * y[1].cos() / y[0],
-            (1.0 + stretch) * y[1].cos(),
-            (1.0 + stretch) * y[1].sin(),
+            -wetted_weight * y[1].sin(),
+            -wetted_weight * y[1].cos() / y[0],
+            -(1.0 + stretch) * y[1].cos(),
+            -(1.0 + stretch) * y[1].sin(),
         ]
     }
 }
