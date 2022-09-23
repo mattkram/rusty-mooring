@@ -133,7 +133,7 @@ impl MooringSystem {
         let mut err_lower = 0.1 * depth;
         let mut err_upper = depth;
         let mut phi_lower = 0.0;
-        let mut phi_upper = 89.0 * PI / 180.0;
+        let mut phi_upper = 90.0 * PI / 180.0;
 
         let max_it = 100;
         let tolerance = 1e-6;
