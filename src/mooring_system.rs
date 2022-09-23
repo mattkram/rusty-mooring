@@ -151,7 +151,6 @@ impl MooringSystem {
                 1 => phi_upper,
                 _ => phi_lower - err_lower * (phi_upper - phi_lower) / (err_upper - err_lower),
             };
-            dbg!(top_ang);
 
             self.calculate_line_shape(top_tension, top_ang, line, &mut nodes);
 
@@ -165,20 +164,18 @@ impl MooringSystem {
                 break;
             }
 
+            // Reset the bounds based on bisection method
             if i == 0 {
                 err_lower = err;
-                phi_lower = top_ang;
             } else if i == 1 {
                 err_upper = err;
-                phi_upper = top_ang;
-            } else if (err_lower * err) > 0.0 {
+            } else if err > 0.0 {
                 err_lower = err;
                 phi_lower = top_ang;
-            } else if (err_upper * err) > 0.0 {
+            } else {
                 err_upper = err;
                 phi_upper = top_ang;
             }
-            dbg!(err_lower, err_upper, phi_lower, phi_upper);
         }
 
         self.rotate_nodes(line, &mut nodes);
@@ -241,7 +238,6 @@ impl MooringSystem {
                 for i in 0..4 {
                     y[i] = y_init[i] + step * slope[k][i];
                 }
-                dbg!(&y);
             }
 
             let mut y_solved = y_init;
