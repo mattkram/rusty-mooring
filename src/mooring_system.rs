@@ -141,16 +141,15 @@ impl MooringSystem {
 
         // TODO: This assumes no pre-tension
         let top_tension = submerged_weight;
-        let mut top_ang = 0.0;
 
         // Here, we will iterate through multiple times until the solution converges
         for i in 0..max_it {
             // Set the top angle in first and second iterations (to bound solution)
-            if i == 0 {
-                top_ang = phi_lower;
-            } else if i == 1 {
-                top_ang = phi_upper;
-            }
+            let top_ang = match i {
+                0 => phi_lower,
+                1 => phi_upper,
+                _ => phi_lower - err_lower * (phi_upper - phi_lower) / (err_upper - err_lower),
+            };
             dbg!(top_ang);
 
             self.calculate_line_shape(top_tension, top_ang, line, &mut nodes);
