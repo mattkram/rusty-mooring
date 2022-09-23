@@ -153,66 +153,7 @@ impl MooringSystem {
             }
             dbg!(top_ang);
 
-            // Set the properties at the top node, before integration
-            let mut top_node = nodes.first_mut().unwrap();
-            top_node.tension = top_tension;
-            top_node.declination_angle = top_ang;
-            top_node.x_corr = 0.0;
-            top_node.y_corr = 0.0;
-            top_node.arc_length = 0.0;
-
-            for node_index in 0..(nodes.len() - 1) {
-                let current_node = &nodes[node_index];
-
-                let mut count = 0;
-                let mut seg = 0.0;
-                let mut line_type_name = &String::new();
-                for segment in &line.segments {
-                    count += segment.num_elements;
-                    if node_index < count {
-                        seg = segment.element_length();
-                        line_type_name = &segment.line_type;
-                        break;
-                    }
-                }
-                let line_type = &self.config.line_types[line_type_name];
-
-                let mut y = [
-                    current_node.tension,
-                    current_node.declination_angle,
-                    current_node.x_corr,
-                    current_node.y_corr,
-                ];
-                let y_init = y;
-                // dim 0 is iteration k, dim 1 is [tension, phi, x, y]
-                let mut slope = [[0.0; 4]; 4];
-
-                // There are 4 iterations in Runge-Kutta method
-                for k in 0..4 {
-                    slope[k] = self.rhs(line_type, &y);
-
-                    let step = match k {
-                        2 => seg, // 2  because we set the new y before the next iteration
-                        _ => seg / 2.0,
-                    };
-                    // New y at which to evaluate RHS
-                    for i in 0..4 {
-                        y[i] = y_init[i] + step * slope[k][i];
-                    }
-                    dbg!(&y);
-                }
-
-                let mut y_solved = y_init;
-                for i in 0..y_solved.len() {
-                    y_solved[i] += seg / 6.0
-                        * (slope[0][i] + 2.0 * slope[1][i] + 2.0 * slope[2][i] + slope[3][i]);
-                }
-                nodes[node_index + 1].tension = y_solved[0];
-                nodes[node_index + 1].declination_angle = y_solved[1];
-                nodes[node_index + 1].x_corr = y_solved[2];
-                nodes[node_index + 1].y_corr = y_solved[3];
-                nodes[node_index + 1].arc_length = nodes[node_index].arc_length + seg;
-            }
+            self.calculate_line_shape(top_tension, top_ang, line, &mut nodes);
 
             for (i, node) in nodes.iter().enumerate() {
                 println!("Node {:3}, arc_length={:.5e}, tension={:.5e}, declination_angle={:.5e}, x_corr={:.5e}, y_corr={:.5e}",
@@ -239,6 +180,77 @@ impl MooringSystem {
         self.rotate_nodes(line, &mut nodes);
 
         nodes
+    }
+
+    /// For a given top tension and angle, integrate the position and tension
+    /// at all nodes for a specific line.
+    /// Uses Runge-Kutta 4th order integration scheme, starting from top node.
+    fn calculate_line_shape(
+        &self,
+        top_tension: f64,
+        top_ang: f64,
+        line: &Line,
+        nodes: &mut Vec<Node>,
+    ) {
+        // Set the properties at the top node, before integration
+        let mut top_node = nodes.first_mut().unwrap();
+        top_node.tension = top_tension;
+        top_node.declination_angle = top_ang;
+        top_node.x_corr = 0.0;
+        top_node.y_corr = 0.0;
+        top_node.arc_length = 0.0;
+
+        for node_index in 0..(nodes.len() - 1) {
+            let mut count = 0;
+            let mut seg = 0.0;
+            let mut line_type_name = &String::new();
+            for segment in &line.segments {
+                count += segment.num_elements;
+                if node_index < count {
+                    seg = segment.element_length();
+                    line_type_name = &segment.line_type;
+                    break;
+                }
+            }
+            let line_type = &self.config.line_types[line_type_name];
+
+            let current_node = &nodes[node_index];
+            let mut y = [
+                current_node.tension,
+                current_node.declination_angle,
+                current_node.x_corr,
+                current_node.y_corr,
+            ];
+            let y_init = y;
+            // dim 0 is iteration k, dim 1 is [tension, phi, x, y]
+            let mut slope = [[0.0; 4]; 4];
+
+            // There are 4 iterations in Runge-Kutta method
+            for k in 0..4 {
+                slope[k] = self.rhs(line_type, &y);
+
+                let step = match k {
+                    2 => seg, // 2  because we set the new y before the next iteration
+                    _ => seg / 2.0,
+                };
+                // New y at which to evaluate RHS
+                for i in 0..4 {
+                    y[i] = y_init[i] + step * slope[k][i];
+                }
+                dbg!(&y);
+            }
+
+            let mut y_solved = y_init;
+            for i in 0..y_solved.len() {
+                y_solved[i] +=
+                    seg / 6.0 * (slope[0][i] + 2.0 * slope[1][i] + 2.0 * slope[2][i] + slope[3][i]);
+            }
+            nodes[node_index + 1].tension = y_solved[0];
+            nodes[node_index + 1].declination_angle = y_solved[1];
+            nodes[node_index + 1].x_corr = y_solved[2];
+            nodes[node_index + 1].y_corr = y_solved[3];
+            nodes[node_index + 1].arc_length = nodes[node_index].arc_length + seg;
+        }
     }
 
     /// Rotate the nodes from in-plane to 3d space, and set the coords property of the nodes.
