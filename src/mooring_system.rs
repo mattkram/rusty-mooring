@@ -154,8 +154,9 @@ impl MooringSystem {
 
             self.calculate_line_shape(top_tension, top_ang, line, &mut nodes);
 
+            println!("Iteration {}", i);
             for (i, node) in nodes.iter().enumerate() {
-                println!("Node {:3}, arc_length={:.5e}, tension={:.5e}, declination_angle={:.5e}, x_corr={:.5e}, y_corr={:.5e}",
+                println!("  Node {:3}, arc_length={:.5e}, tension={:.5e}, declination_angle={:.5e}, x_corr={:.5e}, y_corr={:.5e}",
                          i, node.arc_length, node.tension, node.declination_angle, node.x_corr, node.y_corr);
             }
 
