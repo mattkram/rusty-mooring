@@ -136,6 +136,7 @@ impl MooringSystem {
         let mut phi_upper = 89.0 * PI / 180.0;
 
         let max_it = 100;
+        let tolerance = 1e-6;
 
         let mut nodes: Vec<Node> = vec![Node::new(); total_num_elements + 1];
 
@@ -160,6 +161,10 @@ impl MooringSystem {
             }
 
             let err = -(nodes.last().unwrap().y_corr + depth);
+            if err.abs() < tolerance {
+                break;
+            }
+
             if i == 0 {
                 err_lower = err;
                 phi_lower = top_ang;
@@ -173,7 +178,7 @@ impl MooringSystem {
                 err_upper = err;
                 phi_upper = top_ang;
             }
-            top_ang = phi_lower - err_lower * (phi_upper - phi_lower) / (err_upper - err_lower);
+            dbg!(err_lower, err_upper, phi_lower, phi_upper);
         }
 
         self.rotate_nodes(line, &mut nodes);
