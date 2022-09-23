@@ -17,6 +17,9 @@ def plot_results(results: dict[str, list[Node]]) -> None:
     ax.set_xlabel("x [m]")
     ax.set_ylabel("y [m]")
     ax.set_zlabel("z [m]")
+    ax.set_xlim([-1000.0, 1000.0])
+    ax.set_ylim([-1000.0, 1000.0])
+    ax.set_zlim([-1000.0, 1000.0])
     plt.show()
 
 
