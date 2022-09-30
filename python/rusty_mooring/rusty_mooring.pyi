@@ -20,7 +20,7 @@ class GeneralConfig:
 class LineType:
     diameter: float
     mass_per_length: float
-    axial_stiffness: float
+    youngs_modulus: float
 
 class LineSegment:
     line_type: str
@@ -31,3 +31,25 @@ class Line:
     top_position: list[float]
     bottom_position: list[float]
     segments: list[LineSegment]
+
+class Coordinate:
+    x: float
+    y: float
+    z: float
+
+class Node:
+    tension: float
+    declination_angle: float
+    arc_length: float
+    x_corr: float
+    y_corr: float
+    coords: Coordinate
+
+class MooringSystem:
+    config: Config
+
+    @classmethod
+    def from_file(cls, filename: str) -> MooringSystem: ...
+    def __init__(self, config: Config): ...
+    def solve_static(self) -> dict[str, list[Node]]: ...
+    def get_line_coordinates(self) -> dict[str, list[tuple[float, float, float]]]: ...

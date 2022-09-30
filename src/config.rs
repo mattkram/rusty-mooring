@@ -2,19 +2,20 @@ use pyo3::exceptions::{PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
 use serde_derive::Deserialize;
 use std::collections::HashMap;
+use std::f64::consts::PI;
 use std::fs;
 use toml;
 
 /// Top level struct to hold the config data.
 #[pyclass]
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize)]
 pub struct Config {
     #[pyo3(get)]
-    general: GeneralConfig,
+    pub general: GeneralConfig,
     #[pyo3(get)]
-    line_types: HashMap<String, LineType>,
+    pub line_types: HashMap<String, LineType>,
     #[pyo3(get)]
-    lines: HashMap<String, Line>,
+    pub lines: HashMap<String, Line>,
 }
 
 // TODO: Is there any way to define as Metric in Rust, but make uppercase in Python?
@@ -33,9 +34,11 @@ pub struct GeneralConfig {
     #[pyo3(get)]
     units: Units,
     #[pyo3(get)]
-    gravity: f64,
+    pub gravity: f64,
     #[pyo3(get)]
-    water_density: f64,
+    pub water_density: f64,
+    #[pyo3(get)]
+    pub water_depth: f64,
 }
 
 /// Line type properties.
@@ -43,11 +46,37 @@ pub struct GeneralConfig {
 #[derive(Clone, Deserialize)]
 pub struct LineType {
     #[pyo3(get)]
-    diameter: f64,
+    pub diameter: f64,
     #[pyo3(get)]
-    mass_per_length: f64,
+    pub mass_per_length: f64,
     #[pyo3(get)]
-    axial_stiffness: f64,
+    pub youngs_modulus: f64,
+    #[pyo3(get)]
+    pub internal_diameter: f64,
+    #[pyo3(get)]
+    pub internal_contents_density: f64,
+}
+
+impl LineType {
+    /// The circular area of the inside of a pipe section.
+    pub fn internal_area(&self) -> f64 {
+        0.25 * PI * self.internal_diameter.powi(2)
+    }
+
+    /// The circular area of exterior profile of the line.
+    pub fn external_area(&self) -> f64 {
+        0.25 * PI * self.diameter.powi(2)
+    }
+
+    /// The axial stiffness, i.e. EA
+    pub fn axial_stiffness(&self) -> f64 {
+        self.youngs_modulus * (self.external_area() - self.internal_area())
+    }
+
+    /// The total mass per length, including both structural and internal fluid contents.
+    pub fn total_mass_per_length(&self) -> f64 {
+        self.mass_per_length + self.internal_contents_density * self.internal_area()
+    }
 }
 
 /// A line segment, used to build up a full line.
@@ -55,11 +84,18 @@ pub struct LineType {
 #[derive(Clone, Deserialize)]
 pub struct LineSegment {
     #[pyo3(get)]
-    line_type: String,
+    pub line_type: String,
     #[pyo3(get)]
-    length: f64,
+    pub length: f64,
     #[pyo3(get)]
-    num_elements: i32,
+    pub num_elements: usize,
+}
+
+impl LineSegment {
+    /// The length of the discrete elements in the line segment.
+    pub fn element_length(&self) -> f64 {
+        self.length / (self.num_elements as f64)
+    }
 }
 
 /// A mooring line, consisting of multiple segments.
@@ -67,11 +103,11 @@ pub struct LineSegment {
 #[derive(Clone, Deserialize)]
 pub struct Line {
     #[pyo3(get)]
-    top_position: [f64; 3],
+    pub top_position: [f64; 3],
     #[pyo3(get)]
-    bottom_position: [f64; 3],
+    pub bottom_position: [f64; 3],
     #[pyo3(get)]
-    segments: Vec<LineSegment>,
+    pub segments: Vec<LineSegment>,
 }
 
 /// A structural representation of the input configuration.
@@ -99,5 +135,42 @@ impl Config {
         };
 
         Ok(data)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::config::LineType;
+    use float_cmp::approx_eq;
+    use std::f64::consts::PI;
+
+    fn make_line_type() -> LineType {
+        LineType {
+            diameter: 0.233,
+            mass_per_length: 53.7,
+            youngs_modulus: 9.15e9,
+            internal_diameter: 0.1,
+            internal_contents_density: 0.0,
+        }
+    }
+
+    #[test]
+    fn test_line_type_external_area() {
+        let line_type = make_line_type();
+        assert!(approx_eq!(
+            f64,
+            line_type.external_area(),
+            PI * 0.25_f64 * 0.233_f64.powi(2)
+        ));
+    }
+
+    #[test]
+    fn test_line_type_internal_area() {
+        let line_type = make_line_type();
+        assert!(approx_eq!(
+            f64,
+            line_type.internal_area(),
+            PI * 0.25_f64 * 0.1_f64.powi(2)
+        ));
     }
 }
