@@ -8,12 +8,16 @@ repos:
   - id: trailing-whitespace
   - id: check-yaml
   - id: check-docstring-first
+- repo: https://github.com/doublify/pre-commit-rust
+  rev: v1.0
+  hooks:
+  - id: fmt
+  - id: cargo-check
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.9.0
   hooks:
   - id: pretty-format-yaml
     args: [--autofix, --preserve-quotes, --indent, '2']
-  - id: pretty-format-rust
 - repo: https://github.com/sondrelg/pep585-upgrade
   rev: 'v1.0'
   hooks:
