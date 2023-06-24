@@ -21,7 +21,7 @@ dependencies = []
 
 [project.optional-dependencies]
 test = [
-    "pytest<7.3.3",
+    "pytest<7.4.1",
     "pytest-cov",
     "mypy==1.4.0",
     "nox==2023.4.22",
