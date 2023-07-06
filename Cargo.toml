@@ -12,7 +12,7 @@ crate-type = ["cdylib"]
 pyo3 = { version = "0.19.1", features = ["extension-module"] }
 serde = "1.0.166"
 serde_derive = "1.0.166"
-toml = "0.7.5"
+toml = "0.7.6"
 
 [dev-dependencies]
 float-cmp = "0.9.0"
