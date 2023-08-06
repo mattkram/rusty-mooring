@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 [dependencies]
 pyo3 = { version = "0.19.1", features = ["extension-module"] }
 serde = "1.0.179"
-serde_derive = "1.0.179"
+serde_derive = "1.0.181"
 toml = "0.7.6"
 
 [dev-dependencies]
