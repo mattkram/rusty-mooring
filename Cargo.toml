@@ -10,8 +10,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.20.0", features = ["extension-module"] }
-serde = "1.0.188"
-serde_derive = "1.0.188"
+serde = "1.0.189"
+serde_derive = "1.0.189"
 toml = "0.8.2"
 
 [dev-dependencies]
