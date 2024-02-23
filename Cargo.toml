@@ -9,7 +9,7 @@ name = "rusty_mooring"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.20.2", features = ["extension-module"] }
+pyo3 = { version = "0.20.3", features = ["extension-module"] }
 serde = "1.0.197"
 serde_derive = "1.0.197"
 toml = "0.8.10"
