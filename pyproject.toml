@@ -23,7 +23,7 @@ dependencies = []
 test = [
     "pytest<8.3.4",
     "pytest-cov",
-    "mypy==1.12.1",
+    "mypy==1.13.0",
     "nox==2024.10.9",
 ]
 
