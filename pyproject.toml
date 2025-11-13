@@ -24,7 +24,7 @@ test = [
     "pytest<8.4.2",
     "pytest-cov",
     "mypy==1.17.0",
-    "nox==2025.5.1",
+    "nox==2025.11.12",
 ]
 
 [tool.black]
