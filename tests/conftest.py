@@ -19,8 +19,7 @@ def tmp_cwd(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
 @pytest.fixture()
 def config_file() -> Path:
     """Write a TOML file into the current directory."""
-    contents = dedent(
-        """\
+    contents = dedent("""\
         [general]
         units = "metric"
         gravity = 9.81
@@ -59,8 +58,7 @@ def config_file() -> Path:
             {line_type="polyester", length=2600, num_elements=20},
             {line_type="chain", length=100, num_elements=10},
         ]
-        """
-    )
+        """)
     config_file = Path("test.toml")
     with config_file.open("w") as fp:
         fp.write(contents)
